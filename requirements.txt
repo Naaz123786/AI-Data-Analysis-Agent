@@ -1,0 +1,5 @@
+flask
+pandas
+groq
+openpyxl
+gunicorn

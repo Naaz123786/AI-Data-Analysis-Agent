@@ -33,11 +33,11 @@ def preprocess_and_save(file_path):
 # ======= USER INPUT SECTION =======
 file_path = "diabetes.csv"  
 query = "How many patients have diabetes (Outcome = 1)?" 
-groq_api_key = "" 
+groq_api_key = ""  # set via env var or paste locally (do not commit keys)
 
 # ======= EXECUTION FLOW =======
 if not groq_api_key:
-    print("❌ Please provide your Groq API key.")
+    print("Please provide your Groq API key.")
 else:
     try:
         df, cols, df_html, err = preprocess_and_save(file_path)

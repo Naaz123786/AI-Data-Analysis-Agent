@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 from utils import preprocess_and_save
 import pandas as pd
 from groq import Groq
+import os
 
 app = Flask(__name__)
 
@@ -72,4 +73,6 @@ Only return the Python code (no explanation). Use 'result' as the final output v
     )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", "5000"))
+    # In production, run via gunicorn and keep debug off.
+    app.run(host="0.0.0.0", port=port, debug=False)

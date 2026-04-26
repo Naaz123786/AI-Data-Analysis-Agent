@@ -57,10 +57,8 @@ def index():
             if not upload_path:
                 message = "Please upload a file."
             else:
-                # Re-open file for processing using the existing helper.
                 try:
-                    with open(upload_path, "rb") as f:
-                        df, cols, df_html, err = preprocess_and_save(f)
+                    df, cols, df_html, err = preprocess_and_save(upload_path)
                 except Exception as e:
                     df, cols, df_html, err = None, None, None, str(e)
 

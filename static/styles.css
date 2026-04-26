@@ -32,6 +32,9 @@ body {
 .p-6 {
   padding: 24px;
 }
+.p-4 {
+  padding: 16px;
+}
 .max-w-6xl {
   max-width: 72rem;
 }
@@ -73,6 +76,18 @@ body {
 .flex {
   display: flex;
 }
+.flex-col {
+  flex-direction: column;
+}
+.min-w-0 {
+  min-width: 0;
+}
+.gap-3 {
+  gap: 12px;
+}
+.gap-4 {
+  gap: 16px;
+}
 .items-center {
   align-items: center;
 }
@@ -85,8 +100,18 @@ body {
 .h-12 {
   height: 48px;
 }
+.w-10 {
+  width: 40px;
+}
+.h-10 {
+  height: 40px;
+}
 
 /* Text */
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
 .text-3xl {
   font-size: 1.875rem;
   line-height: 2.25rem;
@@ -109,6 +134,34 @@ body {
 }
 .text-gray-700 {
   color: #374151;
+}
+.break-words {
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 640px) {
+  .sm\:p-6 {
+    padding: 24px;
+  }
+  .sm\:flex-row {
+    flex-direction: row;
+  }
+  .sm\:items-center {
+    align-items: center;
+  }
+  .sm\:gap-4 {
+    gap: 16px;
+  }
+  .sm\:w-12 {
+    width: 48px;
+  }
+  .sm\:h-12 {
+    height: 48px;
+  }
+  .sm\:text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
 }
 
 /* Form controls */

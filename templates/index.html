@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>AI Data Analyst</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Tailwind CDN (nice UI). If it fails to load, we still have local fallback CSS. -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 </head>
 <body class="bg-gradient-to-br from-gray-100 to-blue-50 min-h-screen p-6">
   <div class="max-w-6xl mx-auto space-y-6">

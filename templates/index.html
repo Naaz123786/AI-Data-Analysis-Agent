@@ -30,17 +30,25 @@
     <form method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-xl shadow space-y-5">
       <div class="space-y-2">
         <label class="block font-semibold text-gray-700">🔐 API Key</label>
-        <input type="password" name="api_key" placeholder="Enter your API Key" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" required />
+        <input type="password" name="api_key" placeholder="Enter your API Key (optional if saved this session)" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        <p class="text-gray-600" style="font-size: 0.9rem;">
+          Tip: you can also set <code>GROQ_API_KEY</code> in your hosting environment.
+        </p>
       </div>
       
       <div class="space-y-2">
         <label class="block font-semibold text-gray-700">📁 Upload Dataset (CSV or Excel)</label>
-        <input type="file" name="file" accept=".csv,.xlsx" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" required />
+        <input type="file" name="file" accept=".csv,.xlsx" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        {% if has_cached_upload %}
+          <p class="text-gray-600" style="font-size: 0.9rem;">
+            You can leave this empty to reuse your last uploaded file (this session).
+          </p>
+        {% endif %}
       </div>
       
       <div class="space-y-2">
         <label class="block font-semibold text-gray-700">❓ Ask Your Question</label>
-        <textarea name="query" rows="4" placeholder="e.g. What is the average price by category?" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+        <textarea name="query" rows="4" placeholder="e.g. What is the average price by category?" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">{{ query }}</textarea>
       </div>
       
       <button type="submit" class="w-full bg-blue-700 text-white py-3 rounded-lg hover:bg-blue-800 transition duration-200 font-semibold">

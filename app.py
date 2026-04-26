@@ -1,10 +1,32 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 from utils import preprocess_and_save
 import pandas as pd
 from groq import Groq
 import os
+from uuid import uuid4
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.environ.get("SECRET_KEY", "dev-only-secret"))
+UPLOAD_DIR = os.environ.get("UPLOAD_DIR", "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+
+def _get_groq_key(form_key: str | None) -> str | None:
+    if form_key and form_key.strip():
+        session["groq_api_key"] = form_key.strip()
+        return session["groq_api_key"]
+    if session.get("groq_api_key"):
+        return session["groq_api_key"]
+    return os.environ.get("GROQ_API_KEY")
+
+
+def _save_upload(file) -> str:
+    filename = (file.filename or "").lower()
+    ext = ".csv" if filename.endswith(".csv") else ".xlsx"
+    path = os.path.join(UPLOAD_DIR, f"{uuid4().hex}{ext}")
+    file.save(path)
+    session["last_upload_path"] = path
+    return path
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -14,16 +36,34 @@ def index():
     df_preview_html = ""
     result_html = ""
     code_generated = ""
+    query = ""
+    has_cached_upload = bool(session.get("last_upload_path"))
 
     if request.method == "POST":
         file = request.files.get("file")
-        query = request.form.get("query")
-        groq_key = request.form.get("api_key")
+        query = request.form.get("query") or ""
+        groq_key = _get_groq_key(request.form.get("api_key"))
 
         if not groq_key:
-            message = "Please enter your Groq API key."
-        elif file:
-            df, cols, df_html, err = preprocess_and_save(file)
+            message = "Please enter your Groq API key (or set GROQ_API_KEY in environment)."
+        else:
+            # If user didn't re-upload, reuse the last uploaded file for this session.
+            upload_path = None
+            if file and getattr(file, "filename", ""):
+                upload_path = _save_upload(file)
+            elif session.get("last_upload_path"):
+                upload_path = session.get("last_upload_path")
+
+            if not upload_path:
+                message = "Please upload a file."
+            else:
+                # Re-open file for processing using the existing helper.
+                try:
+                    with open(upload_path, "rb") as f:
+                        df, cols, df_html, err = preprocess_and_save(f)
+                except Exception as e:
+                    df, cols, df_html, err = None, None, None, str(e)
+
             if err:
                 message = err
             else:
@@ -58,10 +98,8 @@ Only return the Python code (no explanation). Use 'result' as the final output v
                             result_html = str(result)
 
                     except Exception as e:
+                        # Keep the preview visible even if the model call fails.
                         message = f"Error running Groq code: {e}"
-
-        else:
-            message = "Please upload a file."
 
     return render_template(
         "index.html",
@@ -70,6 +108,8 @@ Only return the Python code (no explanation). Use 'result' as the final output v
         df_preview_html=df_preview_html,
         code_generated=code_generated,
         result_html=result_html,
+        query=query,
+        has_cached_upload=has_cached_upload,
     )
 
 if __name__ == "__main__":
